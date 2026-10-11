@@ -26,6 +26,13 @@ cargo test -p openpas-backend
 
 `tests/patient_fhir_api.rs` is a real end-to-end test: it builds the actual app via `build_app()` (the same function `main` calls) and exercises it through `tower::ServiceExt::oneshot`, against the real Postgres container, not a mock.
 
+## Known dependency advisories
+
+Two GitHub-native Dependabot alerts (not yet in RustSec's advisory-db, so `cargo audit` doesn't see them) are open against transitive dependencies whose vulnerable code paths aren't reachable in this backend's current configuration:
+
+- **`jsonwebtoken` < 10.3.0** (GHSA-h395-gr6q-cpjc, type confusion in `nbf`/`exp` claim validation) - pulled in via `helios-auth`/`helios-rest`, which pin `jsonwebtoken = "^9"`; no 9.x patch fixes it and no newer Helios release widens the pin yet. Not reachable today: `HFS_AUTH_ENABLED` defaults to `false` and `build_app()` never sets it, so no JWT validation runs. **Before ever enabling auth**, check whether Helios has picked up `jsonwebtoken >= 10.3.0`.
+- **`thrift` < 0.23.0** (GHSA-2f9f-gq7v-9h6m, excessive memory allocation) - pulled in via `parquet` (Parquet file format support in `helios-sof`'s SQL-on-FHIR feature), which pins `thrift = "^0.17"`. Mitigated by setting `ServerConfig.sof_enabled = false` in `build_app()`, since openpas doesn't use SQL-on-FHIR - see the comment there.
+
 ## What's not here yet
 
 The PAS-specific domain layer from `spec/domain-model.md` - Episodes of Care, Admissions, RTT pathway tracking, and the rest - is `spec/roadmap.md` Phase 1 onward. Today this crate proves the substrate works; it doesn't yet implement openpas's own workflow logic.
