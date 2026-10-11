@@ -1,0 +1,31 @@
+# openpas-backend
+
+The FHIR backend: `helios-fhir` + `helios-persistence`'s `PostgresBackend` + `helios-rest`'s `create_app_with_config`, wired together. See [`../../adr/0001-fhir-foundation.md`](../../adr/0001-fhir-foundation.md) for why.
+
+This is the **backend** half of the backend/client split - it serves an HTTP API and owns no UI. There is no client yet; see `spec/roadmap.md`.
+
+## Run it
+
+```sh
+docker compose up -d        # Postgres, from the repo root
+cargo run -p openpas-backend
+```
+
+Listens on `127.0.0.1:8080` by default (`helios_rest::ServerConfig`'s own default). `POST /Patient`, `GET /Patient/{id}`, `GET /metadata`, and the rest of the FHIR RESTful API documented in [helios-rest's README](https://github.com/HeliosSoftware/hfs/blob/main/crates/rest/README.md) all work today - this crate currently does no more than configure and run that substrate.
+
+## Configuration
+
+- `OPENPAS_DB_PASSWORD` - Postgres password, defaults to `openpas-dev` to match `docker-compose.yml`. Everything else (`host`, `port`, `dbname`, `user`) uses `helios_persistence::PostgresConfig`'s own defaults (`localhost:5432/helios` as user `helios`), which `docker-compose.yml` matches.
+
+## Test
+
+```sh
+docker compose up -d
+cargo test -p openpas-backend
+```
+
+`tests/patient_fhir_api.rs` is a real end-to-end test: it builds the actual app via `build_app()` (the same function `main` calls) and exercises it through `tower::ServiceExt::oneshot`, against the real Postgres container, not a mock.
+
+## What's not here yet
+
+The PAS-specific domain layer from `spec/domain-model.md` - Care Spells, Episodes of Care, RTT pathway tracking, and the rest - is `spec/roadmap.md` Phase 1 onward. Today this crate proves the substrate works; it doesn't yet implement openpas's own workflow logic.

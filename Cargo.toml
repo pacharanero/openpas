@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2026 Marcus Baw
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+[workspace]
+resolver = "3"
+members = ["crates/backend"]
+
+[workspace.package]
+edition = "2024"
+rust-version = "1.90"
+license = "AGPL-3.0-or-later"
+authors = ["Marcus Baw"]
