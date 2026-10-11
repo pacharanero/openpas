@@ -1,7 +1,7 @@
 version = 1
 
 [[annotations]]
-path = ["*.md", "spec/*.md", "adr/*.md", "reference/README.md"]
+path = ["*.md", "spec/*.md", "adr/*.md", "**/README.md"]
 SPDX-FileCopyrightText = "2026 Marcus Baw"
 SPDX-License-Identifier = "CC-BY-SA-4.0"
 
