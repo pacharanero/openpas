@@ -1,0 +1,16 @@
+version = 1
+
+[[annotations]]
+path = ["*.md", "spec/*.md", "adr/*.md", "reference/README.md"]
+SPDX-FileCopyrightText = "2026 Marcus Baw"
+SPDX-License-Identifier = "CC-BY-SA-4.0"
+
+[[annotations]]
+path = ["reference/legacy-schema/*.json", "reference/legacy-schema/*.md"]
+SPDX-FileCopyrightText = "2014 IMS MAXIMS"
+SPDX-License-Identifier = "AGPL-3.0-only"
+
+[[annotations]]
+path = ["Cargo.lock", ".editorconfig", ".gitignore"]
+SPDX-FileCopyrightText = "2026 Marcus Baw"
+SPDX-License-Identifier = "AGPL-3.0-or-later"

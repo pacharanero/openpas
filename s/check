@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Marcus Baw
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Everything CI enforces, in the same order. Run before every commit.
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+s/fmt -- --check
+s/lint
+s/test

@@ -1,0 +1,11 @@
+# Rust
+/target
+**/target
+
+# Local environment overrides
+.env
+.env.local
+
+# Editor/OS cruft
+.DS_Store
+*.swp
