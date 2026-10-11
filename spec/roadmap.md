@@ -22,7 +22,7 @@ Legend: `[x]` done, `[~]` in progress, `[ ]` not started. `R` identifiers are st
 
 Per `adr/0001-fhir-foundation.md`, these land as FHIR resources (`Patient`, `EpisodeOfCare`, `Encounter`) on the Helios/Postgres substrate from R28, plus openpas-specific extensions and custom operations where FHIR has no equivalent concept.
 
-- [ ] **R7 - Patient registration and demographics.** Create/update, NHS Number capture and verification workflow, merge handling.
+- [~] **R7 - Patient registration and demographics.** NHS Number checksum validation is live as a standalone endpoint (`POST /openpas/nhs-number/validate`, via the [`nhs-number`](https://crates.io/crates/nhs-number) crate - pinned to 0.3.0, see `crates/backend/Cargo.toml` for why). Not yet wired into Patient create/update itself, and merge handling isn't started.
 - [ ] **R8 - Episode of Care lifecycle.** Open, transfer specialty, close.
 - [ ] **R9 - Admission / bed management.** Admit, transfer, discharge.
 - [ ] **R10 - Referral intake.**

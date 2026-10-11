@@ -2746,6 +2746,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "nhs-number"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b07a37f85351968d84c5dd1a107e60b799475884857ed65684481902493aea9f"
+dependencies = [
+ "rand 0.9.5",
+ "serde",
+]
+
+[[package]]
 name = "nom"
 version = "8.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2950,6 +2960,8 @@ dependencies = [
  "helios-persistence",
  "helios-rest",
  "http-body-util",
+ "nhs-number",
+ "serde",
  "serde_json",
  "tokio",
  "tower",

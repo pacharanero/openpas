@@ -6,3 +6,4 @@ Tiny wrappers for repeated processes. Each `exec`s the underlying tool and forwa
 - `s/lint` - `cargo clippy --all-targets -- -D warnings`
 - `s/test` - `cargo test` (needs a real Postgres: `docker compose up -d` first)
 - `s/check` - `fmt --check` + `lint` + `test`, the same checks CI runs. Run before every commit.
+- `s/up` - starts Postgres and the backend, opens the browser on `/metadata` once it's ready. Foreground process; `Ctrl-C` stops the backend (Postgres keeps running - `docker compose down` to stop that too).
