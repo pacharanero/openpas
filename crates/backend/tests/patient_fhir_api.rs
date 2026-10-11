@@ -13,7 +13,7 @@ use tower::ServiceExt;
 
 #[tokio::test]
 async fn creates_and_reads_back_a_patient_as_real_fhir() {
-    let app = openpas_backend::build_app()
+    let (app, _config) = openpas_backend::build_app()
         .await
         .expect("build_app against the Postgres backend");
 
