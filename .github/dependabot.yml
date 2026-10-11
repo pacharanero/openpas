@@ -9,7 +9,7 @@ updates:
       interval: "weekly"
       day: "monday"
     cooldown:
-      default-days: 1
+      default-days: 7
       semver-patch-days: 3
       semver-minor-days: 7
       semver-major-days: 14
@@ -28,7 +28,7 @@ updates:
       interval: "weekly"
       day: "monday"
     cooldown:
-      default-days: 1
+      default-days: 7
     groups:
       github-actions-minor-and-patch:
         applies-to: version-updates

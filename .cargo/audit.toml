@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2026 Marcus Baw
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+[advisories]
+ignore = [
+    # quick-xml 0.37.5, pulled in transitively via object_store 0.11.2 (helios-sof's
+    # SQL-on-FHIR S3 support), parses S3-API XML responses. openpas-backend uses the
+    # Postgres backend only - no S3 storage is configured or reachable - so the
+    # vulnerable NsReader paths are compiled in but never exercised by any input we
+    # accept today. helios-sof pins `object_store = "0.11"`; no 0.11.x patch fixes
+    # this, and no newer helios-sof release exists yet to widen it. Re-audit and
+    # drop these the moment either ships, and immediately if openpas ever enables
+    # an S3 backend.
+    "RUSTSEC-2026-0195", # quick-xml: unbounded namespace-declaration allocation (DoS)
+    "RUSTSEC-2026-0194", # quick-xml: quadratic runtime on duplicate-attribute check
+]
