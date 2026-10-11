@@ -23,27 +23,21 @@ A locally-assigned patient identifier, scoped to one organisation, used before o
 - Legacy alias: `hospNum`, `mRNStatus`.
 - FHIR alignment: `Patient.identifier` with a local `system`.
 
-## Care Spell
-
-The top-level grouping for one continuous relationship between a patient and a provider, from first contact to final discharge. A spell can contain more than one Episode of Care, for example a patient transferred between specialties during one hospital stay.
-
-- Legacy alias: `core_carespell` / `CareSpell`.
-- FHIR alignment: no exact match. The closest standard concept is a grouping `EpisodeOfCare`, but FHIR UK Core has no dedicated "spell" resource - see `queries.md` for how to model this.
-- Terms to avoid: "stay", which is ambiguous with Ward Stay, a different and narrower concept below.
-
 ## Episode of Care
 
-A continuous period of clinical responsibility for a patient under one specialty and one responsible clinician, nested inside a Care Spell.
+One continuous relationship between a patient and a provider, from first contact to final discharge, matching FHIR's `EpisodeOfCare` resource directly. Can span specialty changes, tracked as history on the episode rather than modelled as a separate wrapping concept.
 
-- Legacy alias: `core_episofcare` / `EpisodeOfCare`.
+- Legacy alias: `core_carespell` / `CareSpell`, and `core_episofcare` / `EpisodeOfCare` - openMAXIMS modelled these as two nested entities (a spell containing specialty-scoped episodes). openpas merges them into one, matching standard FHIR usage directly instead of inventing a "spell" layer on top of it.
 - FHIR alignment: `EpisodeOfCare`.
+- Terms to avoid: "Care Spell" - an earlier draft term for this same concept, dropped in favour of the FHIR name.
 
-## Ward Stay
+## Admission
 
-A single bed/ward placement within an inpatient admission. An admission can include several ward stays as a patient moves between wards.
+A single inpatient stay, start to discharge. Ward and bed moves within it are a location history on the admission itself, not separate entities.
 
-- Legacy alias: `core_ward_stay` / `WardStay`, grouped under `core_inpat_epis` / `InpatientEpisode` (the admission record).
-- FHIR alignment: `Encounter.location`, as a history of locations within one encounter.
+- Legacy alias: `core_inpat_epis` / `InpatientEpisode` (the admission record), with `core_ward_stay` / `WardStay` as openMAXIMS's separate per-move entity - openpas folds that into one admission's location history instead.
+- FHIR alignment: `Encounter`, with `Encounter.location` as the ward/bed history.
+- Terms to avoid: "Ward Stay" - an earlier draft term for a single bed placement; the admission as a whole is the canonical entity now.
 
 ## Referral
 

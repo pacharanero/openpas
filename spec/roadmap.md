@@ -23,8 +23,8 @@ Legend: `[x]` done, `[~]` in progress, `[ ]` not started. `R` identifiers are st
 Per `adr/0001-fhir-foundation.md`, these land as FHIR resources (`Patient`, `EpisodeOfCare`, `Encounter`) on the Helios/Postgres substrate from R28, plus openpas-specific extensions and custom operations where FHIR has no equivalent concept.
 
 - [ ] **R7 - Patient registration and demographics.** Create/update, NHS Number capture and verification workflow, merge handling.
-- [ ] **R8 - Care Spell / Episode of Care lifecycle.** Open, transfer specialty, close.
-- [ ] **R9 - Ward Stay / bed management.** Admit, transfer, discharge.
+- [ ] **R8 - Episode of Care lifecycle.** Open, transfer specialty, close.
+- [ ] **R9 - Admission / bed management.** Admit, transfer, discharge.
 - [ ] **R10 - Referral intake.**
 - [ ] **R11 - Conformance fixtures for Patient Administration.** Golden test cases per house style `specs.md`, covering the lifecycle in R7-R10.
 

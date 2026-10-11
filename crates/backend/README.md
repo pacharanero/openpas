@@ -28,4 +28,4 @@ cargo test -p openpas-backend
 
 ## What's not here yet
 
-The PAS-specific domain layer from `spec/domain-model.md` - Care Spells, Episodes of Care, RTT pathway tracking, and the rest - is `spec/roadmap.md` Phase 1 onward. Today this crate proves the substrate works; it doesn't yet implement openpas's own workflow logic.
+The PAS-specific domain layer from `spec/domain-model.md` - Episodes of Care, Admissions, RTT pathway tracking, and the rest - is `spec/roadmap.md` Phase 1 onward. Today this crate proves the substrate works; it doesn't yet implement openpas's own workflow logic.

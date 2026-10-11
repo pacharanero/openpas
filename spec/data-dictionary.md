@@ -33,41 +33,31 @@ Referenced by entity tables below instead of repeating on every entity.
 | is_active | boolean | soft-delete flag |
 | audit | - | see Shared shapes |
 
-### Care Spell
-
-| Field | Type | Notes |
-|---|---|---|
-| id | uuid | primary key |
-| patient | reference -> Patient | |
-| start_date, end_date | date | `end_date` nullable while ongoing |
-| status | coded | open / closed |
-| status_history | list\<Status change\> | |
-| audit | - | see Shared shapes |
-
 ### Episode of Care
 
 | Field | Type | Notes |
 |---|---|---|
 | id | uuid | primary key |
-| care_spell | reference -> Care Spell | |
-| specialty | coded | |
+| patient | reference -> Patient | |
+| specialty | coded | current value; history in `specialty_history` |
+| specialty_history | list\<Status change\>-shaped | tracks specialty changes over the episode's life, since it can change without ending the episode |
 | responsible_clinician | reference | |
 | opened_by_referral | reference -> Referral | |
 | start_date, end_date | date | `end_date` nullable while ongoing |
-| status | coded | |
+| status | coded | open / closed |
 | status_history | list\<Status change\> | |
 | audit | - | see Shared shapes |
 
-### Ward Stay
+### Admission
 
 | Field | Type | Notes |
 |---|---|---|
 | id | uuid | primary key |
 | episode_of_care | reference -> Episode of Care | |
-| ward, bed | string | |
 | admission_type | coded | elective / emergency / transfer |
 | start_at | datetime | |
 | expected_end_at, actual_end_at | datetime | both nullable |
+| location_history | list\<{ward, bed, start_at, end_at}\> | ward/bed moves during the stay, not separate entities |
 | is_on_leave | boolean | |
 | audit | - | see Shared shapes |
 
@@ -188,9 +178,8 @@ Which mined legacy table(s) most closely informed each v1 entity, with column/fo
 | v1 entity | Legacy table(s) | Columns | FKs |
 |---|---|---|---|
 | Patient | `core_patient` | 90 | 13 |
-| Care Spell | `core_carespell` | 12 | 2 |
-| Episode of Care | `core_episofcare` | 16 | 4 |
-| Ward Stay | `core_ward_stay` (+ admission context in `core_inpat_epis`, 30 cols/2 FKs, and sibling `core_cons_stay`, 8 cols/3 FKs) | 11 | 4 |
+| Episode of Care | `core_carespell` (12 cols/2 FKs) + `core_episofcare` (16 cols/4 FKs) - openMAXIMS modelled these as two nested entities; merged here | - | - |
+| Admission | `core_inpat_epis` (30 cols/2 FKs) + `core_ward_stay` (11 cols/4 FKs) + sibling `core_cons_stay` (8 cols/3 FKs) - openMAXIMS modelled ward/bed moves as a separate per-move entity; folded into one admission's location history here | - | - |
 | Referral | `core_referral` | 32 | 7 |
 | Order Session | `ocrr_ocsorder` | 32 | 12 |
 | Order | `ocrr_orderinvestiga` | 71 | 12 |

@@ -23,4 +23,4 @@ openpas follows [Marcus Baw's house style](https://github.com/pacharanero/house-
 
 ## Local git workflow
 
-Solo, fast-moving repository: commit and push directly to `main` in coherent parcels, per house style `commits.md`. No remote exists yet - do not create one or push without asking first.
+Solo, fast-moving repository: commit and push directly to `main` in coherent parcels, per house style `commits.md`. Remote is `pacharanero/openpas` on GitHub (private). CI (`fmt`/`clippy`/`test`/`audit`/`reuse`/`workflow-security`) runs on push and PR - see `.github/workflows/ci.yml`.

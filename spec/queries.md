@@ -63,3 +63,11 @@ Right now it's a POC, but the long-term ambition is to make it deployable in an 
 "openpas" is the working folder name used for this specification. Confirm whether that's the intended project name going forward (and whether that name is free to use/register) or just a placeholder before any public repo, package name, or domain name gets chosen around it.
 
 openpas is fairly available as a name (eg crates.io) so I'd go with that.
+
+## 8. Result review and escalation
+
+Raised during the R4 domain-model review (`domain-model.md`'s Result entity). Who actions a result, on what timescale, and what happens if the responsible clinician is unavailable? This needs secondary reviewers or escalation paths defined before `roadmap.md` R14 (result capture and review) can be built properly - right now the model only tracks `review_status` as reviewed/unreviewed, with no owner or deadline attached to the unreviewed state.
+
+## 9. RTT compliance reporting mechanics
+
+Raised during the R4 domain-model review (`domain-model.md`'s RTT Pathway entity). `domain-model.md` models the clock itself, but not: which metrics NHS England actually requires, how often they're reported, what precisely constitutes a breach or exception, or how the data gets exported for submission. Needs resolving before `roadmap.md` R18 (RTT clock tracking and breach reporting) goes beyond the clock mechanics - and whatever it is needs to be seamless for end users, not a manual chore.

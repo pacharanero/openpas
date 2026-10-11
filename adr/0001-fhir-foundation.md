@@ -30,7 +30,7 @@ Build `openpas-backend` directly on top of the Helios FHIR Server crates rather 
 - `helios-persistence`'s `PostgresBackend` for storage, matching the PostgreSQL decision already made.
 - `helios-rest`'s `create_app_with_config` for the FHIR RESTful API surface (CRUD, search, versioning, Bundles) as an Axum `Router`.
 
-openpas's own code is the PAS-specific domain and workflow layer on top: Care Spells, Episodes of Care, RTT pathway tracking, placer/filler order workflows, and the rest of `spec/domain-model.md` - realised as FHIR resources (`EpisodeOfCare`, `ServiceRequest`, `Specimen`, `Observation`, `Appointment`, and so on) plus openpas-specific extensions and custom operations where FHIR has no equivalent (the RTT pathway clock has none, per `spec/ubiquitous-language.md`). That domain layer is `spec/roadmap.md` Phase 1 onward, not this ADR.
+openpas's own code is the PAS-specific domain and workflow layer on top: Episodes of Care, Admissions, RTT pathway tracking, placer/filler order workflows, and the rest of `spec/domain-model.md` - realised as FHIR resources (`EpisodeOfCare`, `Encounter`, `ServiceRequest`, `Specimen`, `Observation`, `Appointment`, and so on) plus openpas-specific extensions and custom operations where FHIR has no equivalent (the RTT pathway clock has none, per `spec/ubiquitous-language.md`). That domain layer is `spec/roadmap.md` Phase 1 onward, not this ADR.
 
 `crates/backend` is the first workspace member and is explicitly the **backend** side of the backend/client split: it exposes an HTTP API and owns no UI. Future clients (web, mobile, CLI) are separate workspace members added when there is an actual client to build, not stubbed out empty now.
 
@@ -47,7 +47,7 @@ openpas's own code is the PAS-specific domain and workflow layer on top: Care Sp
 - openpas now has a real, specific dependency on a single third-party project (not a standards body or a langauge-ecosystem default). If Helios stalls or changes direction, the exit cost is real: `helios-fhir`'s types are the easiest part to keep (simple, generated, swappable), but `helios-persistence`/`helios-rest` are load-bearing infrastructure. Mitigate by keeping PAS-specific code behind our own types where practical, and by revisiting this ADR if Helios's maintenance signal changes - see `dependencies.md`'s exit-cost guidance.
 - Helios is 0.2.4: pre-1.0, API can still move. Pin exact versions (see `crates/backend/Cargo.toml`) and treat upgrades as reviewed work, not automatic.
 - Helios's own documentation is written overwhelmingly for running the prebuilt `hfs` binary via environment variables; embedding its crates as a library, which is what openpas needs to add custom PAS operations, is a thinner, less-trodden path. Expect to read source, not just docs, as openpas's custom operations grow.
-- "Full FHIR for the system of record" via a third-party crate rather than a hand-rolled schema means openpas inherits FHIR's own data model assumptions (resource shapes, reference semantics) wherever they don't cleanly match a PAS/OCRR concept - `spec/ubiquitous-language.md` already flags Care Spell and Order Session as two such mismatches.
+- "Full FHIR for the system of record" via a third-party crate rather than a hand-rolled schema means openpas inherits FHIR's own data model assumptions (resource shapes, reference semantics) wherever they don't cleanly match a PAS/OCRR concept - `spec/ubiquitous-language.md` already flags Order Session as one such mismatch.
 
 ## Alternatives considered
 
