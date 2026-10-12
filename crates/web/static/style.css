@@ -1,0 +1,202 @@
+/* SPDX-FileCopyrightText: 2026 Marcus Baw */
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+:root {
+    --bg: #f4f5f7;
+    --surface: #ffffff;
+    --text: #1a1d23;
+    --muted: #5b6372;
+    --border: #d7dbe1;
+    --focus: #1457c9;
+    --accent: #1457c9;
+    --success: #1a7f4e;
+    --danger: #b3261e;
+    --radius: 4px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+a {
+    color: var(--accent);
+}
+
+header.app-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+header.app-header .brand {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+header.app-header nav a {
+    margin-left: 1rem;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+main {
+    max-width: 960px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+h1 {
+    font-size: 1.4rem;
+    margin: 0 0 1rem;
+}
+
+.panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+}
+
+th {
+    color: var(--muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+}
+
+.empty-state {
+    color: var(--muted);
+    padding: 1rem 0;
+}
+
+/* The FHIR id is useful for confirming round-trips during development, not
+   something a clinician/administrator needs prominently - de-emphasise it,
+   and drop it below tablet width rather than let long UUIDs force ugly
+   wrapping in a narrow table. */
+td.fhir-id,
+th.fhir-id {
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+
+@media (max-width: 640px) {
+    td.fhir-id,
+    th.fhir-id {
+        display: none;
+    }
+}
+
+.field {
+    margin-bottom: 1rem;
+}
+
+.field label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+}
+
+.field input {
+    width: 100%;
+    max-width: 320px;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    min-height: 44px;
+}
+
+.field input:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 1px;
+}
+
+.field .hint {
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+.field .check-result {
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+    min-height: 1.2em;
+}
+
+.check-result.valid {
+    color: var(--success);
+}
+
+.check-result.invalid {
+    color: var(--danger);
+}
+
+button,
+.button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.55rem 1.1rem;
+    font-size: 0.95rem;
+    cursor: pointer;
+    min-height: 44px;
+}
+
+button:focus-visible,
+.button:focus-visible,
+a:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 1px;
+}
+
+.error-banner {
+    background: #fdecea;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.success-banner {
+    background: #e9f6ee;
+    border: 1px solid var(--success);
+    color: var(--success);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.login-wrap {
+    max-width: 360px;
+    margin: 4rem auto;
+}

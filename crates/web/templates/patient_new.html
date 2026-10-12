@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+<!--
+SPDX-FileCopyrightText: 2026 Marcus Baw
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+{% block title %}Register patient - openpas{% endblock %}
+{% block content %}
+<h1>Register new patient</h1>
+<div class="panel">
+    <form method="post" action="/patients">
+        <div class="field">
+            <label for="family_name">Family name</label>
+            <input type="text" id="family_name" name="family_name" value="{{ family_name }}"
+                   aria-invalid="{{ family_name_error.is_some() }}" required autofocus>
+            {% if let Some(message) = family_name_error %}
+            <p class="hint check-result invalid" role="alert">{{ message }}</p>
+            {% endif %}
+        </div>
+        <div class="field">
+            <label for="given_name">Given name</label>
+            <input type="text" id="given_name" name="given_name" value="{{ given_name }}"
+                   aria-invalid="{{ given_name_error.is_some() }}" required>
+            {% if let Some(message) = given_name_error %}
+            <p class="hint check-result invalid" role="alert">{{ message }}</p>
+            {% endif %}
+        </div>
+        <div class="field">
+            <label for="date_of_birth">Date of birth</label>
+            <input type="date" id="date_of_birth" name="date_of_birth" value="{{ date_of_birth }}"
+                   aria-invalid="{{ date_of_birth_error.is_some() }}" required>
+            {% if let Some(message) = date_of_birth_error %}
+            <p class="hint check-result invalid" role="alert">{{ message }}</p>
+            {% endif %}
+        </div>
+        <div class="field">
+            <label for="nhs_number">NHS Number</label>
+            <input type="text" id="nhs_number" name="nhs_number" value="{{ nhs_number }}"
+                   placeholder="999 000 0001" aria-invalid="{{ nhs_number_error.is_some() }}"
+                   hx-post="/patients/new/check-nhs-number" hx-trigger="blur, input changed delay:500ms"
+                   hx-target="#nhs-number-check" hx-swap="innerHTML" autocomplete="off">
+            <p class="hint">Optional at registration; must pass the check digit if given.</p>
+            <div id="nhs-number-check" aria-live="polite">
+                {% if let Some(message) = nhs_number_error %}
+                <p class="check-result invalid" role="alert">{{ message }}</p>
+                {% endif %}
+            </div>
+        </div>
+        <button type="submit">Register patient</button>
+    </form>
+</div>
+{% endblock %}

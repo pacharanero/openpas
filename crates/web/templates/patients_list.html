@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+<!--
+SPDX-FileCopyrightText: 2026 Marcus Baw
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+{% block title %}Patients - openpas{% endblock %}
+{% block content %}
+<h1>Patients</h1>
+<p><a class="button" href="/patients/new">Register new patient</a></p>
+<div class="panel">
+    {% if patients.is_empty() %}
+    <p class="empty-state">No patients registered yet.</p>
+    {% else %}
+    <table>
+        <thead>
+            <tr>
+                <th>Family name</th>
+                <th>Given name</th>
+                <th>Date of birth</th>
+                <th class="fhir-id">FHIR id</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for patient in patients %}
+            <tr>
+                <td>{{ patient.family_name }}</td>
+                <td>{{ patient.given_name }}</td>
+                <td>{{ patient.date_of_birth }}</td>
+                <td class="fhir-id">{{ patient.id }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+{% endblock %}

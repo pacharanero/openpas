@@ -14,3 +14,8 @@ SPDX-License-Identifier = "AGPL-3.0-only"
 path = ["Cargo.lock", ".editorconfig", ".gitignore"]
 SPDX-FileCopyrightText = "2026 Marcus Baw"
 SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+[[annotations]]
+path = "crates/web/static/htmx.min.js"
+SPDX-FileCopyrightText = "Big Sky Software"
+SPDX-License-Identifier = "0BSD"

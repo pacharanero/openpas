@@ -2,17 +2,27 @@
 # SPDX-FileCopyrightText: 2026 Marcus Baw
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Starts Postgres and the backend, opens the browser on /metadata once it's
-# ready. Defaults to port 8087, not the backend's own 8080 default - cAdvisor
-# (container monitoring) commonly squats 8080 on a dev machine that also runs
-# Prometheus/Grafana. Override with HFS_SERVER_PORT if you need to.
+# Starts Postgres, the FHIR backend, and the web UI; opens the browser on
+# the login page once it's ready. Ctrl-C stops both Rust processes - though
+# `cargo run` is known not to always forward signals cleanly to the actual
+# binary it spawns; `pkill -f target/debug/openpas` if anything lingers.
+#
+# Backend defaults to port 8087, not its own 8080 default - cAdvisor
+# (container monitoring) commonly squats 8080 on a dev machine that also
+# runs Prometheus/Grafana. Override with HFS_SERVER_PORT if you need to.
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 export HFS_SERVER_PORT="${HFS_SERVER_PORT:-8087}"
-URL="http://127.0.0.1:${HFS_SERVER_PORT}/metadata"
+export OPENPAS_BACKEND_URL="${OPENPAS_BACKEND_URL:-http://127.0.0.1:${HFS_SERVER_PORT}}"
+export OPENPAS_WEB_PORT="${OPENPAS_WEB_PORT:-8089}"
+URL="http://127.0.0.1:${OPENPAS_WEB_PORT}/login"
 
 docker compose up -d
+
+cargo run -p openpas-backend &
+BACKEND_PID=$!
+trap 'kill "$BACKEND_PID" 2>/dev/null' EXIT
 
 (
     for _ in $(seq 1 60); do
@@ -24,4 +34,4 @@ docker compose up -d
     done
 ) &
 
-exec cargo run -p openpas-backend
+cargo run -p openpas-web

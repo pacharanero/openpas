@@ -1,0 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2026 Marcus Baw
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+{% if valid %}
+<p class="check-result valid" role="status">Valid - {{ formatted.as_deref().unwrap_or_default() }}</p>
+{% else %}
+<p class="check-result invalid" role="status">{{ error.as_deref().unwrap_or("Not a valid NHS Number") }}</p>
+{% endif %}
