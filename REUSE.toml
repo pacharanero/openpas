@@ -19,3 +19,13 @@ SPDX-License-Identifier = "AGPL-3.0-or-later"
 path = "crates/web/static/htmx.min.js"
 SPDX-FileCopyrightText = "Big Sky Software"
 SPDX-License-Identifier = "0BSD"
+
+[[annotations]]
+path = ["package.json", "package-lock.json"]
+SPDX-FileCopyrightText = "2026 Marcus Baw"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+[[annotations]]
+path = "crates/web/static/style.css"
+SPDX-FileCopyrightText = ["2026 Marcus Baw", "2020 Pouya Saadeghi", "Tailwind Labs, Inc."]
+SPDX-License-Identifier = "AGPL-3.0-or-later AND MIT"

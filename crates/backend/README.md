@@ -2,7 +2,7 @@
 
 The FHIR backend: `helios-fhir` + `helios-persistence`'s `PostgresBackend` + `helios-rest`'s `create_app_with_config`, wired together. See [`../../adr/0001-fhir-foundation.md`](../../adr/0001-fhir-foundation.md) for why.
 
-This is the **backend** half of the backend/client split - it serves an HTTP API and owns no UI. There is no client yet; see `spec/roadmap.md`.
+This is the **backend** half of the backend/client split - it serves an HTTP API and owns no UI. `crates/web` is its first client; see `spec/roadmap.md`.
 
 ## Run it
 
@@ -11,7 +11,12 @@ docker compose up -d        # Postgres, from the repo root
 cargo run -p openpas-backend
 ```
 
-Listens on `127.0.0.1:8080` by default (`helios_rest::ServerConfig`'s own default). `POST /Patient`, `GET /Patient/{id}`, `GET /metadata`, and the rest of the FHIR RESTful API documented in [helios-rest's README](https://github.com/HeliosSoftware/hfs/blob/main/crates/rest/README.md) all work today - this crate currently does no more than configure and run that substrate.
+Listens on `127.0.0.1:8080` by default (`helios_rest::ServerConfig`'s own default). `POST /Patient`, `GET /Patient/{id}`, `GET /metadata`, and the rest of the FHIR RESTful API documented in [helios-rest's README](https://github.com/HeliosSoftware/hfs/blob/main/crates/rest/README.md) all work today.
+
+Openpas-specific operations:
+
+- `POST /openpas/nhs-number/validate` - NHS Number format and check-digit validation.
+- `POST /openpas/patients/merge` - link-only patient merge. Accepts `survivor_id` and `duplicate_id`; atomically adds reciprocal FHIR `replaces` / `replaced-by` links and marks only the duplicate inactive. It copies no demographics or identifiers and uses FHIR version preconditions to reject concurrent changes rather than overwrite them.
 
 ## Configuration
 
@@ -24,7 +29,7 @@ docker compose up -d
 cargo test -p openpas-backend
 ```
 
-`tests/patient_fhir_api.rs` is a real end-to-end test: it builds the actual app via `build_app()` (the same function `main` calls) and exercises it through `tower::ServiceExt::oneshot`, against the real Postgres container, not a mock.
+`tests/patient_fhir_api.rs` is a real end-to-end test: it builds the actual app via `build_app()` (the same function `main` calls) and exercises it through `tower::ServiceExt::oneshot`, against the real Postgres container, not a mock. It covers Patient create/read/update and the atomic link-only merge operation.
 
 ## Known dependency advisories
 
@@ -35,4 +40,4 @@ Two GitHub-native Dependabot alerts (not yet in RustSec's advisory-db, so `cargo
 
 ## What's not here yet
 
-The PAS-specific domain layer from `spec/domain-model.md` - Episodes of Care, Admissions, RTT pathway tracking, and the rest - is `spec/roadmap.md` Phase 1 onward. Today this crate proves the substrate works; it doesn't yet implement openpas's own workflow logic.
+The broader PAS-specific domain layer from `spec/domain-model.md` - extended demographics, Episodes of Care, Admissions, Referrals, RTT pathway tracking, and the rest - is `spec/roadmap.md` Phase 1 onward.

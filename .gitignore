@@ -1,6 +1,14 @@
 # Rust
 /target
 **/target
+/node_modules
+
+# Disposable browser-automation output
+.playwright-mcp/
+.playwright/
+playwright-report/
+blob-report/
+test-results/
 
 # Local environment overrides
 .env

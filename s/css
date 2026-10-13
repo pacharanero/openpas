@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Marcus Baw
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Compile the checked-in Tailwind + DaisyUI stylesheet. Run `npm ci` once after
+# cloning or whenever package-lock.json changes.
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+if [[ ! -x node_modules/.bin/tailwindcss ]]; then
+  echo "Tailwind CSS is not installed. Run: npm ci" >&2
+  exit 1
+fi
+
+exec npm run build:css -- "$@"

@@ -29,7 +29,8 @@ Server-rendered Rust, not a reactive/WASM framework:
 
 - **`axum`** (already the backend's framework, via Helios) for routing.
 - **`askama`** for templates - type-checked at compile time against the template files, most-downloaded and most recently updated of the options considered.
-- **`htmx`** (vendored locally, not CDN-loaded - see `static/`) for progressive interactivity: live NHS Number validation, form submission, without a SPA build pipeline. Pinned to the 2.0.11 line, not the newer 4.0.0 tag - 4.0's changelog entry wasn't fully published at research time, so 2.x's well-documented stability won: the stability is the sought property here, not newness.
+- **`htmx` 4.0.0** (vendored locally, not CDN-loaded - see `static/`) for progressive interactivity: live NHS Number validation and focused partial-page updates without a SPA runtime. The earlier draft of this ADR incorrectly described the vendored file as 2.0.11; its release banner and upstream tag confirm it is 4.0.0.
+- **DaisyUI 5 + Tailwind CSS 4** for a consistent component system and responsive dashboard shell. The application uses DaisyUI's free official responsive drawer layout rather than copying the separately licensed commercial Nexus dashboard template. CSS is compiled at development/CI time and served locally; there is no browser-side Tailwind runtime or CDN dependency.
 - **`tower-sessions`** for session state. Using its built-in `MemoryStore` for now, not `tower-sessions-sqlx-store`: that store hasn't been updated since January 2025, which fails `dependencies.md`'s "active ownership, recent releases" bar outright. A restart loses all sessions (users log in again) - acceptable at PoC stage; revisit with a properly-maintained store, or a hand-rolled one against the same Postgres, if that stops being acceptable.
 
 **Access control, PoC stage**: `crates/web` is a separate workspace member and a separate process (per the backend/client split in ADR-0001), the only thing with a human-facing login. It holds a session cookie per browser; the FHIR backend stays network-internal, trusted by `crates/web` with no bearer-token exchange of its own yet. This is deliberately temporary: the login itself is a single seeded demo credential, not a user-management system, and is marked as such everywhere it appears in code and docs.
@@ -40,7 +41,7 @@ Server-rendered Rust, not a reactive/WASM framework:
 
 **Easier:**
 
-- No WASM build pipeline, no JS framework decision, no new toolchain beyond `cargo` - the whole stack stays in Rust and compiles with everything else.
+- No WASM or JavaScript application framework. The only Node toolchain is build-time CSS generation, pinned in `package-lock.json`; the running application remains server-rendered Rust plus the small vendored htmx runtime.
 - Access control is the simplest possible shape: a session cookie the server reads, nothing for client-side code to leak.
 - Askama's compile-time template checking catches a typo'd field name as a build error, not a runtime blank page.
 

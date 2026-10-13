@@ -5,32 +5,66 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 {% block title %}Patients - openpas{% endblock %}
 {% block content %}
-<h1>Patients</h1>
-<p><a class="button" href="/patients/new">Register new patient</a></p>
-<div class="panel">
+<div class="page-heading">
+    <div>
+        <p class="text-sm font-medium text-primary">Patient Administration</p>
+        <h1 class="mt-1 text-2xl font-semibold">Patients</h1>
+        <p class="mt-1 text-sm text-base-content/60">Registered patient demographic records.</p>
+    </div>
+    <a class="btn btn-primary" href="/patients/new">Register patient</a>
+</div>
+{% if merged %}
+<div class="alert alert-success mt-6" role="status"><span>Patient records merged. The duplicate remains visible as an inactive record.</span></div>
+{% endif %}
+<div class="mt-6 overflow-hidden rounded-box border border-base-300 bg-base-100">
     {% if patients.is_empty() %}
-    <p class="empty-state">No patients registered yet.</p>
+    <div class="px-6 py-16 text-center">
+        <h2 class="text-lg font-semibold">No patients registered yet</h2>
+        <p class="mt-2 text-sm text-base-content/60">Register a patient to begin their administration record.</p>
+        <a class="btn btn-primary mt-5" href="/patients/new">Register patient</a>
+    </div>
     {% else %}
-    <table>
+    <div class="overflow-x-auto">
+    <table class="table table-zebra">
         <thead>
             <tr>
                 <th>Family name</th>
                 <th>Given name</th>
                 <th>Date of birth</th>
+                <th>Status</th>
                 <th class="fhir-id">FHIR id</th>
+                <th><span class="sr-only">Actions</span></th>
             </tr>
         </thead>
         <tbody>
             {% for patient in patients %}
             <tr>
-                <td>{{ patient.family_name }}</td>
+                <td><a class="link font-medium" href="/patients/{{ patient.id }}">{{ patient.family_name }}</a></td>
                 <td>{{ patient.given_name }}</td>
                 <td>{{ patient.date_of_birth }}</td>
+                <td>
+                    {% if patient.active %}
+                    <span class="badge badge-success badge-sm">Active</span>
+                    {% else %}
+                    <span class="badge badge-ghost badge-sm">Merged</span>
+                    {% endif %}
+                </td>
                 <td class="fhir-id">{{ patient.id }}</td>
+                <td class="text-right">
+                    {% if patient.active %}
+                    <div class="flex justify-end gap-1">
+                        <a class="btn btn-ghost btn-sm" href="/patients/{{ patient.id }}/edit">Edit</a>
+                        <a class="btn btn-ghost btn-sm text-error" href="/patients/{{ patient.id }}/merge">Merge</a>
+                    </div>
+                    {% else if let Some(survivor_id) = patient.merged_into %}
+                    <span class="text-xs text-base-content/55">Into <span class="fhir-id">{{ survivor_id }}</span></span>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    </div>
     {% endif %}
 </div>
 {% endblock %}

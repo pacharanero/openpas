@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+<!--
+SPDX-FileCopyrightText: 2026 Marcus Baw
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+{% block title %}{{ patient.given_name }} {{ patient.family_name }} - openpas{% endblock %}
+{% block content %}
+<div class="page-heading">
+    <div>
+        <a href="/patients" class="link text-sm">Patients</a>
+        <div class="mt-1 flex flex-wrap items-center gap-3">
+            <h1 class="text-2xl font-semibold">{{ patient.given_name }} {{ patient.family_name }}</h1>
+            {% if patient.active %}<span class="badge badge-success">Active</span>{% else %}<span class="badge badge-ghost">Merged</span>{% endif %}
+        </div>
+        <p class="mt-1 text-sm text-base-content/60">FHIR Patient <span class="font-mono">{{ patient.id }}</span></p>
+    </div>
+    {% if patient.active %}
+    <div class="flex gap-2">
+        <a class="btn btn-ghost" href="/patients/{{ patient.id }}/merge">Merge</a>
+        <a class="btn btn-primary" href="/patients/{{ patient.id }}/edit">Edit patient</a>
+    </div>
+    {% endif %}
+</div>
+
+{% if !patient.active %}
+<div class="alert alert-warning mt-6" role="status"><span>This record is inactive because it was merged into Patient/{{ patient.merged_into.as_deref().unwrap_or("unknown") }}.</span></div>
+{% endif %}
+
+<div class="mt-6 grid gap-6 xl:grid-cols-2">
+    <section class="rounded-box border border-base-300 bg-base-100 p-5 sm:p-6">
+        <h2 class="text-lg font-semibold">Demographics</h2>
+        <dl class="mt-4 grid grid-cols-[minmax(7rem,auto)_1fr] gap-x-5 gap-y-3 text-sm">
+            <dt class="text-base-content/55">Family name</dt><dd>{{ patient.family_name }}</dd>
+            <dt class="text-base-content/55">Given name</dt><dd>{{ patient.given_name }}</dd>
+            <dt class="text-base-content/55">Date of birth</dt><dd>{{ patient.date_of_birth }}</dd>
+            <dt class="text-base-content/55">NHS Number</dt><dd>{{ patient.nhs_number.as_deref().unwrap_or("Not recorded") }}</dd>
+        </dl>
+    </section>
+
+    <section class="rounded-box border border-base-300 bg-base-100 p-5 sm:p-6">
+        <h2 class="text-lg font-semibold">Current contact details</h2>
+        <dl class="mt-4 grid grid-cols-[minmax(7rem,auto)_1fr] gap-x-5 gap-y-3 text-sm">
+            <dt class="text-base-content/55">Address</dt>
+            <dd>
+                {% if let Some(address) = patient.address %}
+                <address class="not-italic">{{ address.line_1 }}{% if !address.line_2.is_empty() %}<br>{{ address.line_2 }}{% endif %}{% if !address.city.is_empty() %}<br>{{ address.city }}{% endif %}{% if !address.postal_code.is_empty() %}<br>{{ address.postal_code }}{% endif %}</address>
+                {% else %}Not recorded{% endif %}
+            </dd>
+            <dt class="text-base-content/55">Phone</dt><dd>{{ patient.phone.as_deref().unwrap_or("Not recorded") }}</dd>
+            <dt class="text-base-content/55">Email</dt><dd>{{ patient.email.as_deref().unwrap_or("Not recorded") }}</dd>
+        </dl>
+    </section>
+</div>
+
+<section class="mt-6 rounded-box border border-base-300 bg-base-100 p-5 sm:p-6">
+    <h2 class="text-lg font-semibold">Contact history</h2>
+    {% if patient.previous_addresses.is_empty() && patient.previous_phones.is_empty() && patient.previous_emails.is_empty() %}
+    <p class="mt-3 text-sm text-base-content/60">No previous contact details recorded.</p>
+    {% else %}
+    <div class="mt-4 overflow-x-auto">
+        <table class="table">
+            <thead><tr><th>Type</th><th>Previous value</th><th>Ended</th></tr></thead>
+            <tbody>
+                {% for address in patient.previous_addresses %}
+                <tr><td>Address</td><td>{{ address.line_1 }}{% if !address.line_2.is_empty() %}, {{ address.line_2 }}{% endif %}{% if !address.city.is_empty() %}, {{ address.city }}{% endif %}{% if !address.postal_code.is_empty() %}, {{ address.postal_code }}{% endif %}</td><td>{{ address.ended_on.as_deref().unwrap_or("Not recorded") }}</td></tr>
+                {% endfor %}
+                {% for phone in patient.previous_phones %}
+                <tr><td>Phone</td><td>{{ phone.value }}</td><td>{{ phone.ended_on.as_deref().unwrap_or("Not recorded") }}</td></tr>
+                {% endfor %}
+                {% for email in patient.previous_emails %}
+                <tr><td>Email</td><td>{{ email.value }}</td><td>{{ email.ended_on.as_deref().unwrap_or("Not recorded") }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

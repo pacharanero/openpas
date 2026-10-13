@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+<!--
+SPDX-FileCopyrightText: 2026 Marcus Baw
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+{% block title %}Merge patient records - openpas{% endblock %}
+{% block content %}
+<div class="page-heading">
+    <div>
+        <a href="/patients" class="link text-sm">Patients</a>
+        <h1 class="mt-1 text-2xl font-semibold">Merge patient records</h1>
+        <p class="mt-1 text-sm text-base-content/60">Keep one record active and link an inactive duplicate to it.</p>
+    </div>
+</div>
+
+<div class="mt-6 grid max-w-5xl gap-6 lg:grid-cols-2">
+    <section class="rounded-box border border-base-300 bg-base-100 p-5 sm:p-6">
+        <p class="text-xs font-semibold uppercase text-base-content/50">Surviving record</p>
+        <h2 class="mt-2 text-xl font-semibold">{{ survivor.given_name }} {{ survivor.family_name }}</h2>
+        <dl class="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
+            <dt class="text-base-content/55">Date of birth</dt>
+            <dd>{{ survivor.date_of_birth }}</dd>
+            <dt class="text-base-content/55">FHIR id</dt>
+            <dd class="break-all font-mono text-xs">{{ survivor.id }}</dd>
+        </dl>
+        <div class="alert alert-info mt-5 text-sm"><span>This record remains active. No demographics or identifiers are copied from the duplicate.</span></div>
+    </section>
+
+    <section class="rounded-box border border-error/35 bg-base-100 p-5 sm:p-6">
+        <p class="text-xs font-semibold uppercase text-error">Duplicate to deactivate</p>
+        {% if let Some(message) = error %}
+        <div class="alert alert-error mt-4" role="alert"><span>{{ message }}</span></div>
+        {% endif %}
+        {% if candidates.is_empty() %}
+        <p class="mt-4 text-sm text-base-content/60">There are no other active patient records to merge.</p>
+        {% else %}
+        <form method="post" action="/patients/{{ survivor.id }}/merge" class="mt-4 space-y-5">
+            <fieldset class="fieldset">
+                <label class="fieldset-legend" for="duplicate_id">Duplicate patient record</label>
+                <select class="select w-full" id="duplicate_id" name="duplicate_id" required>
+                    <option value="" selected disabled>Select a duplicate</option>
+                    {% for patient in candidates %}
+                    <option value="{{ patient.id }}">{{ patient.given_name }} {{ patient.family_name }} - {{ patient.date_of_birth }}</option>
+                    {% endfor %}
+                </select>
+            </fieldset>
+            <label class="label cursor-pointer items-start gap-3 whitespace-normal">
+                <input class="checkbox checkbox-error mt-0.5" type="checkbox" name="confirmed" value="yes" required>
+                <span class="text-sm">I understand the duplicate record will become inactive and this operation must be reviewed before any later reversal.</span>
+            </label>
+            <div class="flex flex-col-reverse gap-3 border-t border-base-300 pt-5 sm:flex-row sm:justify-end">
+                <a class="btn btn-ghost" href="/patients">Cancel</a>
+                <button class="btn btn-error" type="submit">Merge duplicate record</button>
+            </div>
+        </form>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

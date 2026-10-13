@@ -145,7 +145,7 @@ async fn full_login_and_patient_registration_flow() {
                     "application/x-www-form-urlencoded",
                 )
                 .body(Body::from(
-                    "family_name=Smith&given_name=Jane&date_of_birth=1990-01-31&nhs_number=",
+                    "family_name=Smith&given_name=Jane&date_of_birth=1990-01-31&nhs_number=&address_line_1=1+Old+Street&address_line_2=&city=Leeds&postal_code=LS1+1AA&phone=01131234567&email=jane%40old.example",
                 ))
                 .unwrap(),
         )
@@ -172,7 +172,141 @@ async fn full_login_and_patient_registration_flow() {
     assert!(text.contains("Smith"));
     assert!(text.contains("Jane"));
 
-    // 6. Logging out clears the session, so /patients bounces to /login again.
+    // 6. The edit form is pre-populated from the repository.
+    let edit_response = app
+        .clone()
+        .oneshot(
+            Request::get("/patients/1/edit")
+                .header(http::header::COOKIE, cookie.clone())
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(edit_response.status(), StatusCode::OK);
+    let text = body_text(edit_response).await;
+    assert!(text.contains("Edit patient"));
+    assert!(text.contains("value=\"Smith\""));
+
+    // 7. Saving valid changes updates the same patient record.
+    let update_response = app
+        .clone()
+        .oneshot(
+            Request::post("/patients/1/edit")
+                .header(http::header::COOKIE, cookie.clone())
+                .header(
+                    http::header::CONTENT_TYPE,
+                    "application/x-www-form-urlencoded",
+                )
+                .body(Body::from(
+                    "family_name=Jones&given_name=Jane&date_of_birth=1985-06-15&nhs_number=&address_line_1=2+New+Road&address_line_2=&city=York&postal_code=YO1+1AA&phone=01904123456&email=jane%40new.example",
+                ))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(update_response.status(), StatusCode::SEE_OTHER);
+
+    let updated_list = app
+        .clone()
+        .oneshot(
+            Request::get("/patients")
+                .header(http::header::COOKIE, cookie.clone())
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    let text = body_text(updated_list).await;
+    assert!(text.contains("Jones"));
+    assert!(!text.contains(">Smith<"));
+
+    let detail_response = app
+        .clone()
+        .oneshot(
+            Request::get("/patients/1")
+                .header(http::header::COOKIE, cookie.clone())
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    let text = body_text(detail_response).await;
+    assert!(text.contains("2 New Road"));
+    assert!(text.contains("1 Old Street"));
+    assert!(text.contains("01904123456"));
+    assert!(text.contains("01131234567"));
+    assert!(text.contains("jane@new.example"));
+    assert!(text.contains("jane@old.example"));
+
+    // 8. Register a second record and merge it into the first without moving fields.
+    let duplicate_response = app
+        .clone()
+        .oneshot(
+            Request::post("/patients")
+                .header(http::header::COOKIE, cookie.clone())
+                .header(
+                    http::header::CONTENT_TYPE,
+                    "application/x-www-form-urlencoded",
+                )
+                .body(Body::from(
+                    "family_name=Duplicate&given_name=Janet&date_of_birth=1985-06-15&nhs_number=",
+                ))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(duplicate_response.status(), StatusCode::SEE_OTHER);
+
+    let merge_form = app
+        .clone()
+        .oneshot(
+            Request::get("/patients/1/merge")
+                .header(http::header::COOKIE, cookie.clone())
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    let text = body_text(merge_form).await;
+    assert!(text.contains("Surviving record"));
+    assert!(text.contains("Janet Duplicate"));
+
+    let merge_response = app
+        .clone()
+        .oneshot(
+            Request::post("/patients/1/merge")
+                .header(http::header::COOKIE, cookie.clone())
+                .header(
+                    http::header::CONTENT_TYPE,
+                    "application/x-www-form-urlencoded",
+                )
+                .body(Body::from("duplicate_id=2&confirmed=yes"))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(merge_response.status(), StatusCode::SEE_OTHER);
+    assert_eq!(
+        merge_response.headers().get("location").unwrap(),
+        "/patients?merged=1"
+    );
+
+    let merged_list = app
+        .clone()
+        .oneshot(
+            Request::get("/patients?merged=1")
+                .header(http::header::COOKIE, cookie.clone())
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    let text = body_text(merged_list).await;
+    assert!(text.contains("Patient records merged"));
+    assert!(text.contains("Merged"));
+
+    // 9. Logging out clears the session, so /patients bounces to /login again.
     let logout_response = app
         .clone()
         .oneshot(

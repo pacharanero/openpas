@@ -7,6 +7,7 @@ use helios_persistence::backends::postgres::{PostgresBackend, PostgresConfig};
 use helios_rest::{ServerConfig, create_app_with_config};
 
 pub mod nhs_number;
+pub mod patient_merge;
 
 /// Builds the Postgres-backed FHIR app. Shared by `main` and the integration
 /// tests so both exercise the real wiring, not a stand-in. Returns the
@@ -35,8 +36,17 @@ pub async fn build_app() -> Result<(axum::Router, ServerConfig)> {
         ..ServerConfig::default()
     };
 
-    let app = create_app_with_config(backend, server_config.clone())
-        .route("/openpas/nhs-number/validate", post(nhs_number::validate));
+    let fhir_app = create_app_with_config(backend, server_config.clone());
+    let merge_fhir_app = fhir_app.clone();
+    let app = fhir_app
+        .route("/openpas/nhs-number/validate", post(nhs_number::validate))
+        .route(
+            "/openpas/patients/merge",
+            post(move |input| {
+                let fhir_app = merge_fhir_app.clone();
+                async move { patient_merge::merge(fhir_app, input).await }
+            }),
+        );
     Ok((app, server_config))
 }
 

@@ -20,7 +20,8 @@ openpas follows [Marcus Baw's house style](https://github.com/pacharanero/house-
 - `s/fmt` - `cargo fmt --all`
 - `s/lint` - `cargo clippy --all-targets -- -D warnings`
 - `s/test` - `cargo test`
-- `s/check` - all three, in that order; run before every commit
+- `s/css` - compile Tailwind CSS + DaisyUI into the checked-in web stylesheet; requires `npm ci --ignore-scripts` after cloning
+- `s/check` - Rust checks plus npm audit and a reproducible web-asset build; run before every commit
 
 ## Local git workflow
 

@@ -8,3 +8,11 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 s/fmt -- --check
 s/lint
 s/test
+npm audit
+CSS_BEFORE=$(sha256sum crates/web/static/style.css)
+s/css
+CSS_AFTER=$(sha256sum crates/web/static/style.css)
+if [[ "$CSS_BEFORE" != "$CSS_AFTER" ]]; then
+  echo "crates/web/static/style.css was stale; commit the regenerated file." >&2
+  exit 1
+fi

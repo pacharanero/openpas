@@ -3,49 +3,111 @@
 SPDX-FileCopyrightText: 2026 Marcus Baw
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
-{% block title %}Register patient - openpas{% endblock %}
+{% block title %}{{ page_title }} - openpas{% endblock %}
 {% block content %}
-<h1>Register new patient</h1>
-<div class="panel">
-    <form method="post" action="/patients">
-        <div class="field">
-            <label for="family_name">Family name</label>
-            <input type="text" id="family_name" name="family_name" value="{{ family_name }}"
+<div class="page-heading">
+    <div>
+        <a href="/patients" class="link text-sm">Patients</a>
+        <h1 class="mt-1 text-2xl font-semibold">{{ heading }}</h1>
+        <p class="mt-1 text-sm text-base-content/60">{{ description }}</p>
+    </div>
+</div>
+<div class="mt-6 max-w-5xl rounded-box border border-base-300 bg-base-100 p-5 sm:p-8">
+    <form method="post" action="{{ form_action }}" class="space-y-6">
+        <section aria-labelledby="identity-heading">
+        <h2 id="identity-heading" class="text-lg font-semibold">Identity</h2>
+        <div class="grid gap-5 sm:grid-cols-2">
+        <fieldset class="fieldset">
+            <label class="fieldset-legend" for="family_name">Family name</label>
+            <input class="input w-full" type="text" id="family_name" name="family_name" value="{{ family_name }}"
                    aria-invalid="{{ family_name_error.is_some() }}" required autofocus>
             {% if let Some(message) = family_name_error %}
-            <p class="hint check-result invalid" role="alert">{{ message }}</p>
+            <p class="field-error" role="alert">{{ message }}</p>
             {% endif %}
-        </div>
-        <div class="field">
-            <label for="given_name">Given name</label>
-            <input type="text" id="given_name" name="given_name" value="{{ given_name }}"
+        </fieldset>
+        <fieldset class="fieldset">
+            <label class="fieldset-legend" for="given_name">Given name</label>
+            <input class="input w-full" type="text" id="given_name" name="given_name" value="{{ given_name }}"
                    aria-invalid="{{ given_name_error.is_some() }}" required>
             {% if let Some(message) = given_name_error %}
-            <p class="hint check-result invalid" role="alert">{{ message }}</p>
+            <p class="field-error" role="alert">{{ message }}</p>
             {% endif %}
-        </div>
-        <div class="field">
-            <label for="date_of_birth">Date of birth</label>
-            <input type="date" id="date_of_birth" name="date_of_birth" value="{{ date_of_birth }}"
+        </fieldset>
+        <fieldset class="fieldset">
+            <label class="fieldset-legend" for="date_of_birth">Date of birth</label>
+            <input class="input w-full" type="date" id="date_of_birth" name="date_of_birth" value="{{ date_of_birth }}"
                    aria-invalid="{{ date_of_birth_error.is_some() }}" required>
             {% if let Some(message) = date_of_birth_error %}
-            <p class="hint check-result invalid" role="alert">{{ message }}</p>
+            <p class="field-error" role="alert">{{ message }}</p>
             {% endif %}
-        </div>
-        <div class="field">
-            <label for="nhs_number">NHS Number</label>
-            <input type="text" id="nhs_number" name="nhs_number" value="{{ nhs_number }}"
+        </fieldset>
+        <fieldset class="fieldset">
+            <label class="fieldset-legend" for="nhs_number">NHS Number <span class="font-normal text-base-content/50">(optional)</span></label>
+            <input class="input w-full" type="text" id="nhs_number" name="nhs_number" value="{{ nhs_number }}"
                    placeholder="999 000 0001" aria-invalid="{{ nhs_number_error.is_some() }}"
                    hx-post="/patients/new/check-nhs-number" hx-trigger="blur, input changed delay:500ms"
                    hx-target="#nhs-number-check" hx-swap="innerHTML" autocomplete="off">
-            <p class="hint">Optional at registration; must pass the check digit if given.</p>
+            <p class="label text-xs text-base-content/55">Must pass the check digit if given.</p>
             <div id="nhs-number-check" aria-live="polite">
                 {% if let Some(message) = nhs_number_error %}
                 <p class="check-result invalid" role="alert">{{ message }}</p>
                 {% endif %}
             </div>
+        </fieldset>
         </div>
-        <button type="submit">Register patient</button>
+        </section>
+
+        <section class="border-t border-base-300 pt-6" aria-labelledby="address-heading">
+            <div>
+                <h2 id="address-heading" class="text-lg font-semibold">Home address</h2>
+                <p class="mt-1 text-sm text-base-content/60">Optional. Changing or clearing an address keeps the previous value in the patient's history.</p>
+            </div>
+            {% if let Some(message) = address_error %}
+            <div class="alert alert-error mt-4" role="alert"><span>{{ message }}</span></div>
+            {% endif %}
+            <div class="mt-4 grid gap-5 sm:grid-cols-2">
+                <fieldset class="fieldset sm:col-span-2">
+                    <label class="fieldset-legend" for="address_line_1">Address line 1</label>
+                    <input class="input w-full" type="text" id="address_line_1" name="address_line_1" value="{{ address_line_1 }}" autocomplete="address-line1" aria-invalid="{{ address_error.is_some() }}">
+                </fieldset>
+                <fieldset class="fieldset sm:col-span-2">
+                    <label class="fieldset-legend" for="address_line_2">Address line 2 <span class="font-normal text-base-content/50">(optional)</span></label>
+                    <input class="input w-full" type="text" id="address_line_2" name="address_line_2" value="{{ address_line_2 }}" autocomplete="address-line2">
+                </fieldset>
+                <fieldset class="fieldset">
+                    <label class="fieldset-legend" for="city">Town or city</label>
+                    <input class="input w-full" type="text" id="city" name="city" value="{{ city }}" autocomplete="address-level2">
+                </fieldset>
+                <fieldset class="fieldset">
+                    <label class="fieldset-legend" for="postal_code">Postcode</label>
+                    <input class="input w-full uppercase" type="text" id="postal_code" name="postal_code" value="{{ postal_code }}" autocomplete="postal-code" aria-invalid="{{ address_error.is_some() }}">
+                </fieldset>
+            </div>
+        </section>
+
+        <section class="border-t border-base-300 pt-6" aria-labelledby="contact-heading">
+            <div>
+                <h2 id="contact-heading" class="text-lg font-semibold">Contact details</h2>
+                <p class="mt-1 text-sm text-base-content/60">Optional. Previous phone numbers and email addresses remain in the record history.</p>
+            </div>
+            <div class="mt-4 grid gap-5 sm:grid-cols-2">
+                <fieldset class="fieldset">
+                    <label class="fieldset-legend" for="phone">Phone number</label>
+                    <input class="input w-full" type="tel" id="phone" name="phone" value="{{ phone }}" autocomplete="tel">
+                </fieldset>
+                <fieldset class="fieldset">
+                    <label class="fieldset-legend" for="email">Email address</label>
+                    <input class="input w-full" type="email" id="email" name="email" value="{{ email }}" autocomplete="email" aria-invalid="{{ email_error.is_some() }}">
+                    {% if let Some(message) = email_error %}
+                    <p class="field-error" role="alert">{{ message }}</p>
+                    {% endif %}
+                </fieldset>
+            </div>
+        </section>
+        <div class="flex flex-col-reverse gap-3 border-t border-base-300 pt-5 sm:flex-row sm:justify-end">
+            <a class="btn btn-ghost" href="/patients">Cancel</a>
+            <button class="btn btn-primary" type="submit">{{ submit_label }}</button>
+        </div>
     </form>
 </div>
 {% endblock %}
