@@ -5,8 +5,8 @@
     "build:css": "tailwindcss -i crates/web/static/input.css -o crates/web/static/style.css"
   },
   "devDependencies": {
-    "@tailwindcss/cli": "4.3.0",
-    "daisyui": "^5.7.47",
-    "tailwindcss": "4.3.0"
+    "@tailwindcss/cli": "4.3.3",
+    "daisyui": "^5.7.50",
+    "tailwindcss": "4.3.3"
   }
 }
